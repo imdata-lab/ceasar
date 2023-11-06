@@ -12,19 +12,48 @@ For an accurate calculation of the shared view between the paired devices, the f
 
 If any of these conditions are unmet, the overlap is considered to be 0, implying that the devices do not have a shared view.
 
-## Calculation 
-1. **Device Heading**: Defined by two angles - vertical (up/down) and horizontal (left/right).
-2. **Field of View**: Empirical analysis determined a 60x60 degree, representing the smallest observable field within the simulation.
+## Calculation Process
+
+1. **Device Heading**:
+   Defined by two angles - vertical (up/down) and horizontal (left/right).
+   
+2. **Field of View**:
+   Determined as a 60x60 degree area, representing the smallest observable field within the simulation.
+   
 <p align="center">
   <img width="350" src="https://github.com/imdata-lab/ceasar/assets/54631893/8b773f47-e2a6-42d5-b18f-0a548e2ebc17" alt="FOV">
 </p>
 
-4. **Reference Coordinates**: The top-left corner of this viewable field is ascertained by a 30-degree adjustment both vertically and horizontally. The simulation's spherical nature requires special consideration when determining distances between specific headings.
-5. **Overlap Quantification**: Trigonometry is employed to compute the overlap between the views of the two devices. This value can span from 0 to 3600, the latter being the maximum possible overlap area.
-6. **SV Metric Calculation**: The overlap is then divided by 3600 to get the SV metric. Thus, the SV values fall between 0 (no FOV overlap) and 1 (entire FOV overlap).
+3. **Reference Coordinates**:
+   The top-left corner of this viewable field is ascertained by a 30-degree adjustment both vertically and horizontally. The simulation's spherical nature requires special consideration when determining distances between specific headings.
+
+4. **Overlap Quantification**:
+   Trigonometry is employed to compute the overlap between the views of the two devices. This value can span from 0 to 3600, the latter being the maximum possible overlap area.
+
 <p align="center">
   <img width="550" src="https://github.com/imdata-lab/ceasar/assets/54631893/d31b33f9-f522-455c-9302-e41f1c590086" alt="SV Calculation">
-</p>
+ </p>
+  
+  ```
+f(x1, x2, y1, y2) = {
+(60 - |x1 - x2|) * (60 - |y1 - y2|) if |x1 - x2| ≤ 60 and |y1 - y2| ≤ 60,
+0 otherwise
+}
+  ```
+
+Where:
+- `x1`, `y1`: The x and y coordinates of the first device's view.
+- `x2`, `y2`: The x and y coordinates of the second device's view.
+
+Formula Explanation:
+- `|x1 - x2|`: The absolute horizontal difference between the two devices' views.
+- `|y1 - y2|`: The absolute vertical difference between the two devices' views.
+- If both `|x1 - x2|` and `|y1 - y2|` are within 60 degrees, we calculate the product of (60 - `|x1 - x2|`) and (60 - `|y1 - y2|`) to find the overlap area.
+- If either absolute difference is greater than 60 degrees, the overlap is considered zero, indicating no shared view.
+
+
+5. **SV Metric Calculation**:
+   The overlap is then divided by 3600 to get the SV metric. Thus, the SV values fall between 0 (no FOV overlap) and 1 (entire FOV overlap).
 
 ## Transformation from SV to Joint Attention Features
 The SV metric serves as the foundation for deducing Joint Attention features. While the SV metric quantifies screen overlap, the Joint Attention features categorize this overlap into distinct states or scenarios. The table below presents how specific overlap scenarios (determined by the SV metric) map to distinct Joint Attention features:
